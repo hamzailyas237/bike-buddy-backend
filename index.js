@@ -17,6 +17,11 @@ mongoose.connect(process.env.URI)
 
 app.use(cors())
 app.use(express.json())
+
+app.get('/', (req, res) => {
+    res.send('Welcome to Bike Buddy APIs');
+});
+
 app.use('/api', router)
 
 app.listen(PORT, () => {
