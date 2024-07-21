@@ -31,6 +31,12 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    riderLatitude: {
+        type: String,
+    },
+    riderLongitude : {
+        type: String,
+    },
     // location: {
     //     type: String,
     //     required: true

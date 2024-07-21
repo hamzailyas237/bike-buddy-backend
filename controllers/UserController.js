@@ -113,6 +113,33 @@ const userController = {
         });
       });
   },
+
+  updateUserDetails: (req, res) => {
+    const { riderLatitude,riderLongitude,numberPlate } = req.body;
+    console.log(" req.body",  req.body);
+    userModel.findOneAndUpdate(
+      { numberPlate }, 
+      { $set: { riderLatitude, riderLongitude } }, 
+      { new: true, useFindAndModify: false }
+    )
+    .then((user) => {
+      if (user) {
+        res.status(200).json({
+          message: "User details updated successfully",
+          user,
+        });
+      } else {
+        res.status(400).json({
+          message: "No user with this number plate exists",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: "Something went wrong",
+      });
+    })
+  },
 };
 
 module.exports = userController;
