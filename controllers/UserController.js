@@ -115,11 +115,11 @@ const userController = {
   },
 
   updateUserDetails: (req, res) => {
-    const { riderLatitude,riderLongitude,numberPlate } = req.body;
+    const { riderLatitude,riderLongitude,numberPlate, speed } = req.body;
     console.log(" req.body",  req.body);
     userModel.findOneAndUpdate(
       { numberPlate }, 
-      { $set: { riderLatitude, riderLongitude } }, 
+      { $set: { riderLatitude, riderLongitude,speed } }, 
       { new: true, useFindAndModify: false }
     )
     .then((user) => {
