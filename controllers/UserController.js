@@ -9,7 +9,7 @@ const userController = {
       numberPlate,
       vehicleDescription,
       latitude,
-      longitude
+      longitude,
     } = req.body;
 
     console.log("req", req.body);
@@ -58,35 +58,6 @@ const userController = {
           message: "Something went wrong",
         });
       });
-
-    // userModel
-    //   .findOne({ parentEmail })
-    //   .then(async (user) => {
-    //     if (user) {
-    //       res.status(400).json({
-    //         message: "This email is already in use",
-    //       });
-    //     } else {
-    //       userModel
-    //         .create(req.body)
-    //         .then((user) => {
-    //           res.status(200).json({
-    //             message: "User details saved successfully",
-    //             user,
-    //           });
-    //         })
-    //         .catch((err) => {
-    //           res.status(500).json({
-    //             message: "Something went wrong",
-    //           });
-    //         });
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     res.status(500).json({
-    //       message: "Something went wrong",
-    //     });
-    //   });
   },
 
   getUserDetails: (req, res) => {
@@ -114,16 +85,85 @@ const userController = {
       });
   },
 
-  updateUserDetails: (req, res) => {
-    const { riderLatitude,riderLongitude,numberPlate, speed } = req.body;
-    console.log(" req.body",  req.body);
-    userModel.findOneAndUpdate(
-      { numberPlate }, 
-      { $set: { riderLatitude, riderLongitude,speed } }, 
-      { new: true, useFindAndModify: false }
-    )
-    .then((user) => {
+  // updateUserDetails: (req, res) => {
+  //   const {
+  //     riderLatitude,
+  //     riderLongitude,
+  //     numberPlate,
+  //     lastSpeed,
+  //     lastDistance,
+  //     speed,
+  //     distance,
+  //   } = req.body;
+  //   console.log(" req.body", req.body);
+  //   userModel
+  //     .findOneAndUpdate(
+  //       { numberPlate },
+  //       {
+  //         $set: {
+  //           riderLatitude,
+  //           riderLongitude,
+  //           lastSpeed,
+  //           lastDistance,
+  //           speed,
+  //           distance,
+  //         },
+  //       },
+  //       { new: true, useFindAndModify: false }
+  //     )
+  //     .then((user) => {
+  //       if (user) {
+  //         res.status(200).json({
+  //           message: "User details updated successfully",
+  //           user,
+  //         });
+  //       } else {
+  //         res.status(400).json({
+  //           message: "No user with this number plate exists",
+  //         });
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       res.status(500).json({
+  //         message: "Something went wrong",
+  //       });
+  //     });
+  // },
+
+  updateUserDetails: async (req, res) => {
+    const {
+      riderLatitude,
+      riderLongitude,
+      numberPlate,
+      lastSpeed,
+      lastDistance,
+    } = req.body;
+  
+    try {
+      // Find the user by numberPlate
+      let user = await userModel.findOne({ numberPlate });
+  
       if (user) {
+        // Push the lastSpeed and lastDistance into the respective arrays
+        user.speed.push(lastSpeed);
+        user.distance.push(lastDistance);
+  
+        // Update the user's details
+        user = await userModel.findOneAndUpdate(
+          { numberPlate },
+          {
+            $set: {
+              riderLatitude,
+              riderLongitude,
+              lastSpeed,
+              lastDistance,
+              speed: user.speed,
+              distance: user.distance,
+            },
+          },
+          { new: true, useFindAndModify: false }
+        );
+  
         res.status(200).json({
           message: "User details updated successfully",
           user,
@@ -133,13 +173,14 @@ const userController = {
           message: "No user with this number plate exists",
         });
       }
-    })
-    .catch((err) => {
+    } catch (err) {
+      console.error(err);
       res.status(500).json({
         message: "Something went wrong",
       });
-    })
+    }
   },
+  
 };
 
 module.exports = userController;
